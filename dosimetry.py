@@ -1,3 +1,4 @@
+from pathlib import Path
 import requests
 import pandas as pd
 import plotly.express as px
@@ -5,7 +6,8 @@ import plotly.express as px
 from io import StringIO
 
 
-STATE_DATA_URL = "https://raw.githubusercontent.com/CITF-Malaysia/citf-public/main/vaccination/vax_state.csv"
+#DOSIMETRIC_DATA_URL = "https://gist.githubusercontent.com/grzanka/ac78b7aaea89ec94ac8692842778569e/raw/2052f7e84e31d993d5dac06c448af3e963b9cbfa/file.csv"
+DOSIMETRIC_DATA_URL = "https://raw.githubusercontent.com/CITF-Malaysia/citf-public/main/vaccination/vax_state.csv"
 
 
 def fetch_csv(data_url: str) -> pd.DataFrame:
@@ -23,7 +25,7 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def plot_cumulative_state(df: pd.DataFrame, outfile: str):
+def plot_cumulative_state(df: pd.DataFrame, outfile: Path):
     fig = px.bar(
         state_data,
         x="state",
@@ -34,11 +36,13 @@ def plot_cumulative_state(df: pd.DataFrame, outfile: str):
         title="Vaccination Count in Malaysia by State",
     )
 
-    fig.write_html(outfile, include_plotlyjs='cdn')
+    fig.write_html(str(outfile), include_plotlyjs='cdn')
 
 
 if __name__ == "__main__":
-    state_data = fetch_csv(STATE_DATA_URL)
+    state_data = fetch_csv(DOSIMETRIC_DATA_URL)
     state_data = clean(state_data)
 
-    plot_cumulative_state(state_data, "index.html")
+    outfile = Path("site", "index.html")
+    outfile.parent.mkdir(exist_ok=True, parents=True)
+    plot_cumulative_state(state_data, outfile)
