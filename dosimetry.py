@@ -22,8 +22,8 @@ def plot(df: pd.DataFrame, outfile: Path):
         render_mode='webgl'
     )
 #    fig.update_traces(marker_line=dict(width=1, color='DarkSlateGray'))
-#    fig.write_html(str(outfile), include_plotlyjs='cdn')
-    fig.show()
+    fig.write_html(str(outfile), include_plotlyjs='cdn')
+    #fig.show()
 
 if __name__ == "__main__":
     df = fetch_csv(DOSIMETRIC_DATA_URL)
