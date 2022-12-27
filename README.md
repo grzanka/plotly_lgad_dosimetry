@@ -15,7 +15,7 @@ According to stack overflow, you need setuptools>=62 and pip>=21.3 to be able to
 We use `requirements.txt` file to specify all required dependencies:
 
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 Once you are done deactivate the virtual environment:
