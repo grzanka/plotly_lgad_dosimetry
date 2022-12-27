@@ -1,34 +1,52 @@
 from pathlib import Path
-import requests
+import click
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
-from io import StringIO
+DOSIMETRIC_DATA_SOURCE = Path(Path(__file__).parent, 'data.h5')
 
 
-DOSIMETRIC_DATA_URL = "https://gist.githubusercontent.com/grzanka/ac78b7aaea89ec94ac8692842778569e/raw/23e988abb7d7892cb13b3937b296ff79a0b474ee/gistfile2.txt"
+def data(data_path: Path) -> pd.DataFrame:
+    return pd.DataFrame(pd.read_hdf(data_path, key='df'))
 
-def fetch_csv(data_url: str) -> pd.DataFrame:
-    return pd.read_csv(StringIO(requests.get(data_url).text))
 
-def plot(df: pd.DataFrame, outfile: Path):
-    fig = px.scatter(
-        df,
-        x="first_timestamp",
-        y=["E1"],
-        title="Test",
-        color='filename_core',
-        facet_col="driver",
-        render_mode='webgl'
-    )
-#    fig.update_traces(marker_line=dict(width=1, color='DarkSlateGray'))
-    fig.write_html(str(outfile), include_plotlyjs='cdn')
-    #fig.show()
+def plot(df: pd.DataFrame) -> go.Figure:
+    fig = px.scatter(df,
+                     x="first_timestamp",
+                     y=["E1"],
+                     title="Test",
+                     color='filename_core',
+                     facet_col="driver",
+                     render_mode='webgl')
+    return fig
 
-if __name__ == "__main__":
-    df = fetch_csv(DOSIMETRIC_DATA_URL)
-    print(df.head())
 
+@click.command()
+def generate() -> None:
+    '''Generate the plot and save it to a file'''
+    df = data(DOSIMETRIC_DATA_SOURCE)
+    fig = plot(df)
     outfile = Path("site", "index.html")
     outfile.parent.mkdir(exist_ok=True, parents=True)
-    plot(df, outfile)
+    fig.write_html(str(outfile), include_plotlyjs='cdn')
+
+
+@click.command()
+def show() -> None:
+    '''Show the plot in a browser'''
+    df = data(DOSIMETRIC_DATA_SOURCE)
+    fig = plot(df)
+    fig.show()
+
+
+@click.group()
+def run():
+    pass
+
+
+run.add_command(show)
+run.add_command(generate)
+
+if __name__ == "__main__":
+    run()
