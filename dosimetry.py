@@ -12,11 +12,11 @@ def data(data_path: Path) -> pd.DataFrame:
 
 
 def plot(df: pd.DataFrame) -> go.Figure:
+    '''Plot the data'''
     fig = px.scatter(df,
                      x="first_timestamp",
                      y=["E1"],
-                     title="Test",
-                     color='filename_core',
+                     title="Ionisation chamber current vs time",
                      facet_col="driver",
                      render_mode='webgl')
     return fig
