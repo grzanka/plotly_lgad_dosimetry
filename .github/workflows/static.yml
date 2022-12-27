@@ -2,7 +2,7 @@
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on a
   push:
     branches: ["main"]
 
@@ -40,7 +40,7 @@ jobs:
           pip install -r requirements.txt
       - name: Generate 'index.html'
         run: |
-          python dosimetry.py
+          python dosimetry.py generate
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
