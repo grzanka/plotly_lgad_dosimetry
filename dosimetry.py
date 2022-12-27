@@ -44,7 +44,9 @@ def experiment_facets(df: pd.DataFrame) -> go.Figure:
                      y=["E1"],
                      title="Ionisation chamber current vs time",
                      facet_col='experiment',
+                     color='scenario',
                      render_mode='webgl')
+    fig.update_xaxes(matches=None)
     return fig
 
 
