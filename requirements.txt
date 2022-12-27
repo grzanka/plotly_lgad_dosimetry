@@ -3,3 +3,4 @@ requests
 plotly
 tables
 click
+beautifulsoup4
