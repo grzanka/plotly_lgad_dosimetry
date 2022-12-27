@@ -14,50 +14,79 @@ def data(data_path: Path) -> pd.DataFrame:
     return pd.DataFrame(pd.read_hdf(data_path, key='df'))
 
 
-def plot(df: pd.DataFrame) -> go.Figure:
+def summary_plot(df: pd.DataFrame) -> go.Figure:
     '''Plot the data'''
     fig = px.scatter(df,
                      x="first_timestamp",
                      y=["E1"],
                      title="Ionisation chamber current vs time",
-                     facet_col="driver",
+                     color='driver',
                      render_mode='webgl')
     return fig
 
 
-@click.command()
-def full() -> None:
-    '''Generate the plot and save it to a file'''
-    df = data(DOSIMETRIC_DATA_SOURCE)
-    fig = plot(df)
-    outfile = Path("site", "index.html")
-    outfile.parent.mkdir(exist_ok=True, parents=True)
-    plot_div = fig.to_html(fig, include_plotlyjs='cdn', full_html=True)
-    # parse the `site/index.html` file using beautiful soup
-    with open(HTML_TEMPLATE_FILE, 'r') as f:
-        soup = BeautifulSoup(f, 'html.parser')
-        template_div = soup.find(id='ex1-tabs-1')
-        if template_div is not None:
-            template_div.append(BeautifulSoup(plot_div, 'html.parser'))
-        with open(HTML_OUTPUT_FILE, 'w') as f:
-            f.write(str(soup))
+def driver_facets(df: pd.DataFrame) -> go.Figure:
+    '''Plot the data'''
+    fig = px.scatter(df,
+                     x="first_timestamp",
+                     y=["E1"],
+                     title="Ionisation chamber current vs time",
+                     facet_col='driver',
+                     render_mode='webgl')
+    return fig
 
 
 @click.command()
 def generate() -> None:
     '''Generate the plot and save it to a file'''
     df = data(DOSIMETRIC_DATA_SOURCE)
-    fig = plot(df)
-    outfile = Path("site", "index.html")
-    outfile.parent.mkdir(exist_ok=True, parents=True)
-    fig.write_html(str(outfile), include_plotlyjs='cdn')
+    # parse the template file using beautiful soup
+    with open(HTML_TEMPLATE_FILE, 'r') as f:
+        click.echo(f'Parsing {HTML_TEMPLATE_FILE}')
+        soup = BeautifulSoup(f, 'html.parser')
+
+        summary_template_div = soup.find(id='plot-tabs-1')
+        if summary_template_div is not None:
+            fig = summary_plot(df)
+            plot_div = fig.to_html(fig,
+                                   include_plotlyjs='cdn',
+                                   full_html=False,
+                                   default_height='80%',
+                                   default_width='90%')
+            summary_template_div.append(BeautifulSoup(plot_div, 'html.parser'))
+
+        driver_template_div = soup.find(id='plot-tabs-3')
+        if driver_template_div is not None:
+            fig = driver_facets(df)
+            plot_div = fig.to_html(fig,
+                                   include_plotlyjs='cdn',
+                                   full_html=False,
+                                   default_height='80%',
+                                   default_width='90%')
+            driver_template_div.append(BeautifulSoup(plot_div, 'html.parser'))
+
+        # ensure the output directory exists
+        HTML_OUTPUT_FILE.parent.mkdir(exist_ok=True, parents=True)
+        # write the output file
+        with open(HTML_OUTPUT_FILE, 'w') as f:
+            click.echo(f'Writing {HTML_OUTPUT_FILE}')
+            f.write(str(soup))
 
 
 @click.command()
-def show() -> None:
+@click.option('--plot',
+              type=click.Choice(['summary', 'driver']),
+              default='summary',
+              help='Plot to show')
+def show(plot) -> None:
     '''Show the plot in a browser'''
     df = data(DOSIMETRIC_DATA_SOURCE)
-    fig = plot(df)
+    fig = go.Figure()
+    click.echo(f'Plotting {plot}')
+    if plot == 'driver':
+        fig = driver_facets(df)
+    elif plot == 'summary':
+        fig = summary_plot(df)
     fig.show()
 
 
@@ -68,7 +97,6 @@ def run():
 
 run.add_command(show)
 run.add_command(generate)
-run.add_command(full)
 
 if __name__ == "__main__":
     run()

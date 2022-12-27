@@ -1,96 +1,71 @@
 <html>
-<head>
-    <meta charset="utf-8" />
 
-<!-- Font Awesome -->
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-  rel="stylesheet"
-/>
-<!-- Google Fonts -->
-<link
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-  rel="stylesheet"
-/>
-<!-- MDB -->
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css"
-  rel="stylesheet"
-/>
+<head>
+  <meta charset="utf-8" />
+
+  <style>
+    .js-plotly-plot,
+    .plot-container {
+      height: 800px;
+      width: 900px;
+    }
+  </style>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+  <!-- MDB -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css" rel="stylesheet" />
 
 
 </head>
+
 <body>
 
-  <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+  <!-- 
+    it seems there is some issue with adjusting size of plots
+    they somehow gets automatically with of 450px, for problem description see:
+    https://community.plotly.com/t/plot-sizing-problems/1620
+    a temporary workaround is to resize page on every tab change
+   -->
+  <ul class="nav nav-tabs mb-3" id="plot-list-1" role="tablist">
     <li class="nav-item" role="presentation">
-      <a
-        class="nav-link active"
-        id="ex1-tab-1"
-        data-mdb-toggle="tab"
-        href="#ex1-tabs-1"
-        role="tab"
-        aria-controls="ex1-tabs-1"
-        aria-selected="true"
-        >Tab 1</a
-      >
+      <a class="nav-link active" id="plot-tab-1" data-mdb-toggle="tab" href="#plot-tabs-1" role="tab"
+        aria-controls="plot-tabs-1" aria-selected="true" onclick="window.dispatchEvent(new Event('resize'));">Summary</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a
-        class="nav-link"
-        id="ex1-tab-2"
-        data-mdb-toggle="tab"
-        href="#ex1-tabs-2"
-        role="tab"
-        aria-controls="ex1-tabs-2"
-        aria-selected="false"
-        >Tab 2</a
-      >
+      <a class="nav-link" id="plot-tab-2" data-mdb-toggle="tab" href="#plot-tabs-2" role="tab"
+        aria-controls="plot-tabs-2" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">By experiment</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a
-        class="nav-link"
-        id="ex1-tab-3"
-        data-mdb-toggle="tab"
-        href="#ex1-tabs-3"
-        role="tab"
-        aria-controls="ex1-tabs-3"
-        aria-selected="false"
-        >Tab 3</a
-      >
+      <a class="nav-link" id="plot-tab-3" data-mdb-toggle="tab" href="#plot-tabs-3" role="tab"
+        aria-controls="plot-tabs-3" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">By driver</a>
     </li>
   </ul>
   <!-- Tabs navs -->
-  
+
   <!-- Tabs content -->
   <div class="tab-content" id="ex1-content">
-    <div
-      class="tab-pane fade show active"
-      id="ex1-tabs-1"
-      role="tabpanel"
-      aria-labelledby="ex1-tab-1"
-    >
-      Tab 1 content
+    <div class="tab-pane fade show active" id="plot-tabs-1" role="tabpanel" aria-labelledby="plot-tab-1">
+      Summary
     </div>
-    <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-      Tab 2 content
+    <div class="tab-pane fade" id="plot-tabs-2" role="tabpanel" aria-labelledby="plot-tab-2">
+      By experiment <br> WORK IN PROGRESS
     </div>
-    <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-      Tab 3 content
+    <div class="tab-pane fade" id="plot-tabs-3" role="tabpanel" aria-labelledby="plot-tab-3">
+      By driver
     </div>
   </div>
   <!-- Tabs content -->
 
+  <!-- Tabs navs -->
 
-<!-- Tabs navs -->
-
-<!-- MDB -->
-<script
-  type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.js"
-></script>
-<!-- Custom scripts -->
-<script type="text/javascript"></script>
+  <!-- MDB -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.js"></script>
+  <!-- Custom scripts -->
+  <script type="text/javascript"></script>
 
 </body>
+
 </html>
