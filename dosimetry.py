@@ -38,7 +38,10 @@ def driver_facets(df: pd.DataFrame) -> go.Figure:
 
 def experiment_facets(df: pd.DataFrame) -> go.Figure:
     '''Plot the data'''
-    df_filtered = df[df.experiment != 'NA']
+
+    # filter the data based on current_scan until we fix the data
+    df_filtered = df[df.experiment == 'current_scan']
+
     fig = px.scatter(df_filtered,
                      x="first_timestamp",
                      y=["E1"],
@@ -47,6 +50,48 @@ def experiment_facets(df: pd.DataFrame) -> go.Figure:
                      color='scenario',
                      render_mode='webgl')
     fig.update_xaxes(matches=None)
+
+    scenario_labels = df_filtered.scenario.unique()
+    buttons = [
+        dict(
+            label=scenario_label, 
+            method='update', 
+            args=[{
+                'visible': [scenario_label == item for item in scenario_labels]
+            }, 
+            {
+                'title': scenario_label,
+                'showlegend': False
+            }
+            ]
+        ) 
+        for scenario_label in scenario_labels
+    ]
+    buttons.append(
+        dict(
+            label='All',
+            method='update',
+            args=[{
+                'visible': [True for item in scenario_labels]
+            }, 
+            {
+                'title': 'All',
+                'showlegend': False
+            }
+            ]
+        )
+    )
+
+    fig.update_layout(
+        updatemenus=[
+            dict(buttons=buttons,
+                active=0,
+                type="buttons",
+                direction="down",
+            )
+        ]
+    )
+
     return fig
 
 
