@@ -36,6 +36,65 @@ def driver_facets(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
+def experiment_facets(df: pd.DataFrame) -> go.Figure:
+    '''Plot the data'''
+
+    # filter the data based on current_scan until we fix the data
+    df_filtered = df[df.experiment == 'current_scan']
+
+    fig = px.scatter(df_filtered,
+                     x="first_timestamp",
+                     y=["E1"],
+                     title="Ionisation chamber current vs time",
+                     facet_col='experiment',
+                     color='scenario',
+                     render_mode='webgl')
+    fig.update_xaxes(matches=None)
+
+    scenario_labels = df_filtered.scenario.unique()
+    buttons = [
+        dict(
+            label=scenario_label, 
+            method='update', 
+            args=[{
+                'visible': [scenario_label == item for item in scenario_labels]
+            }, 
+            {
+                'title': scenario_label,
+                'showlegend': False
+            }
+            ]
+        ) 
+        for scenario_label in scenario_labels
+    ]
+    buttons.append(
+        dict(
+            label='All',
+            method='update',
+            args=[{
+                'visible': [True for item in scenario_labels]
+            }, 
+            {
+                'title': 'All',
+                'showlegend': False
+            }
+            ]
+        )
+    )
+
+    fig.update_layout(
+        updatemenus=[
+            dict(buttons=buttons,
+                active=0,
+                type="buttons",
+                direction="down",
+            )
+        ]
+    )
+
+    return fig
+
+
 @click.command()
 def generate() -> None:
     '''Generate the plot and save it to a file'''
@@ -54,6 +113,17 @@ def generate() -> None:
                                    default_height='80%',
                                    default_width='90%')
             summary_template_div.append(BeautifulSoup(plot_div, 'html.parser'))
+
+        experiment_template_div = soup.find(id='plot-tabs-2')
+        if experiment_template_div is not None:
+            fig = experiment_facets(df)
+            plot_div = fig.to_html(fig,
+                                   include_plotlyjs='cdn',
+                                   full_html=False,
+                                   default_height='80%',
+                                   default_width='90%')
+            experiment_template_div.append(
+                BeautifulSoup(plot_div, 'html.parser'))
 
         driver_template_div = soup.find(id='plot-tabs-3')
         if driver_template_div is not None:
@@ -75,7 +145,7 @@ def generate() -> None:
 
 @click.command()
 @click.option('--plot',
-              type=click.Choice(['summary', 'driver']),
+              type=click.Choice(['summary', 'driver', 'experiment']),
               default='summary',
               help='Plot to show')
 def show(plot) -> None:
@@ -85,6 +155,8 @@ def show(plot) -> None:
     click.echo(f'Plotting {plot}')
     if plot == 'driver':
         fig = driver_facets(df)
+    elif plot == 'experiment':
+        fig = experiment_facets(df)
     elif plot == 'summary':
         fig = summary_plot(df)
     fig.show()
