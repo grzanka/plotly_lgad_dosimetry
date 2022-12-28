@@ -36,7 +36,7 @@ def driver_facets(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def figure_experiments(df: pd.DataFrame) -> list[go.Figure]:
+def figure_experiments(df: pd.DataFrame, time_column: str = "first_timestamp") -> list[go.Figure]:
     '''Plot the data'''
 
     figs = []
@@ -47,7 +47,7 @@ def figure_experiments(df: pd.DataFrame) -> list[go.Figure]:
     for experiment_name in experiment_names:
         fig = px.scatter(df_with_experiments[df_with_experiments.experiment ==
                                              experiment_name],
-                         x="first_timestamp",
+                         x=time_column,
                          y=["E1"],
                          title="Ionisation chamber current vs time",
                          facet_col='experiment',
@@ -134,6 +134,19 @@ def generate() -> None:
                                                  default_width='90%')
             driver_template_div.append(
                 BeautifulSoup(driver_plot_div, 'html.parser'))
+
+        experiment_template_div = soup.find(id='plot-tabs-4')
+        if experiment_template_div is not None:
+            experiment_figs = figure_experiments(df, time_column="lgad_timestamp")
+            for experiment_fig in experiment_figs:
+                experiment_plot_div = experiment_fig.to_html(
+                    experiment_fig,
+                    include_plotlyjs='cdn',
+                    full_html=False,
+                    default_height='80%',
+                    default_width='90%')
+                experiment_template_div.append(
+                    BeautifulSoup(experiment_plot_div, 'html.parser'))
 
         # ensure the output directory exists
         HTML_OUTPUT_FILE.parent.mkdir(exist_ok=True, parents=True)
