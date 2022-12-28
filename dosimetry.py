@@ -36,63 +36,59 @@ def driver_facets(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def experiment_facets(df: pd.DataFrame) -> go.Figure:
+def figure_experiments(df: pd.DataFrame, time_column: str = "first_timestamp") -> list[go.Figure]:
     '''Plot the data'''
 
-    # filter the data based on current_scan until we fix the data
-    df_filtered = df[df.experiment == 'current_scan']
+    figs = []
+    df_with_experiments = df[df.experiment != 'NA']
 
-    fig = px.scatter(df_filtered,
-                     x="first_timestamp",
-                     y=["E1"],
-                     title="Ionisation chamber current vs time",
-                     facet_col='experiment',
-                     color='scenario',
-                     render_mode='webgl')
-    fig.update_xaxes(matches=None)
+    experiment_names = df_with_experiments.experiment.unique()
 
-    scenario_labels = df_filtered.scenario.unique()
-    buttons = [
-        dict(
-            label=scenario_label, 
-            method='update', 
-            args=[{
-                'visible': [scenario_label == item for item in scenario_labels]
-            }, 
-            {
-                'title': scenario_label,
-                'showlegend': False
-            }
-            ]
-        ) 
-        for scenario_label in scenario_labels
-    ]
-    buttons.append(
-        dict(
-            label='All',
-            method='update',
-            args=[{
-                'visible': [True for item in scenario_labels]
-            }, 
-            {
-                'title': 'All',
-                'showlegend': False
-            }
-            ]
-        )
-    )
+    for experiment_name in experiment_names:
+        fig = px.scatter(df_with_experiments[df_with_experiments.experiment ==
+                                             experiment_name],
+                         x=time_column,
+                         y=["E1"],
+                         title="Ionisation chamber current vs time",
+                         facet_col='experiment',
+                         color='scenario',
+                         render_mode='webgl')
+        fig.update_xaxes(matches=None)
 
-    fig.update_layout(
-        updatemenus=[
-            dict(buttons=buttons,
+        scenario_labels = df_with_experiments[
+            df_with_experiments.experiment ==
+            experiment_name].scenario.unique()
+        buttons = [
+            dict(label=scenario_label,
+                 method='update',
+                 args=[{
+                     'visible':
+                     [scenario_label == item for item in scenario_labels]
+                 }, {
+                     'title': scenario_label,
+                     'showlegend': True
+                 }]) for scenario_label in scenario_labels
+        ]
+        buttons.append(
+            dict(label='All',
+                 method='update',
+                 args=[{
+                     'visible': [True for item in scenario_labels]
+                 }, {
+                     'title': 'All',
+                     'showlegend': True
+                 }]))
+
+        fig.update_layout(updatemenus=[
+            dict(
+                buttons=buttons,
                 active=0,
                 type="buttons",
                 direction="down",
             )
-        ]
-    )
-
-    return fig
+        ])
+        figs.append(fig)
+    return figs
 
 
 @click.command()
@@ -106,34 +102,64 @@ def generate() -> None:
 
         summary_template_div = soup.find(id='plot-tabs-1')
         if summary_template_div is not None:
-            fig = summary_plot(df)
-            plot_div = fig.to_html(fig,
-                                   include_plotlyjs='cdn',
-                                   full_html=False,
-                                   default_height='80%',
-                                   default_width='90%')
-            summary_template_div.append(BeautifulSoup(plot_div, 'html.parser'))
+            summary_fig = summary_plot(df)
+            summary_plot_div = summary_fig.to_html(summary_fig,
+                                                   include_plotlyjs='cdn',
+                                                   full_html=False,
+                                                   default_height='80%',
+                                                   default_width='90%')
+            summary_template_div.append(
+                BeautifulSoup(summary_plot_div, 'html.parser'))
 
         experiment_template_div = soup.find(id='plot-tabs-2')
         if experiment_template_div is not None:
-            fig = experiment_facets(df)
-            plot_div = fig.to_html(fig,
-                                   include_plotlyjs='cdn',
-                                   full_html=False,
-                                   default_height='80%',
-                                   default_width='90%')
-            experiment_template_div.append(
-                BeautifulSoup(plot_div, 'html.parser'))
+            experiment_figs = figure_experiments(df)
+            for experiment_fig in experiment_figs:
+                experiment_plot_div = experiment_fig.to_html(
+                    experiment_fig,
+                    include_plotlyjs='cdn',
+                    full_html=False,
+                    default_height='80%',
+                    default_width='90%')
+                experiment_template_div.append(
+                    BeautifulSoup(experiment_plot_div, 'html.parser'))
 
-        driver_template_div = soup.find(id='plot-tabs-3')
-        if driver_template_div is not None:
-            fig = driver_facets(df)
-            plot_div = fig.to_html(fig,
-                                   include_plotlyjs='cdn',
-                                   full_html=False,
-                                   default_height='80%',
-                                   default_width='90%')
-            driver_template_div.append(BeautifulSoup(plot_div, 'html.parser'))
+        # driver_template_div = soup.find(id='plot-tabs-3')
+        # if driver_template_div is not None:
+        #     driver_fig = driver_facets(df)
+        #     driver_plot_div = driver_fig.to_html(driver_fig,
+        #                                          include_plotlyjs='cdn',
+        #                                          full_html=False,
+        #                                          default_height='80%',
+        #                                          default_width='90%')
+        #     driver_template_div.append(
+        #         BeautifulSoup(driver_plot_div, 'html.parser'))
+
+        experiment_template_div = soup.find(id='plot-tabs-4')
+        if experiment_template_div is not None:
+            experiment_figs = figure_experiments(df, time_column="lgad_timestamp")
+            for experiment_fig in experiment_figs:
+                experiment_plot_div = experiment_fig.to_html(
+                    experiment_fig,
+                    include_plotlyjs='cdn',
+                    full_html=False,
+                    default_height='80%',
+                    default_width='90%')
+                experiment_template_div.append(
+                    BeautifulSoup(experiment_plot_div, 'html.parser'))
+
+        experiment_template_div = soup.find(id='plot-tabs-5')
+        if experiment_template_div is not None:
+            experiment_figs = figure_experiments(df, time_column="lgad_timestamp_data")
+            for experiment_fig in experiment_figs:
+                experiment_plot_div = experiment_fig.to_html(
+                    experiment_fig,
+                    include_plotlyjs='cdn',
+                    full_html=False,
+                    default_height='80%',
+                    default_width='90%')
+                experiment_template_div.append(
+                    BeautifulSoup(experiment_plot_div, 'html.parser'))
 
         # ensure the output directory exists
         HTML_OUTPUT_FILE.parent.mkdir(exist_ok=True, parents=True)
@@ -156,7 +182,7 @@ def show(plot) -> None:
     if plot == 'driver':
         fig = driver_facets(df)
     elif plot == 'experiment':
-        fig = experiment_facets(df)
+        fig = figure_experiments(df)[0]
     elif plot == 'summary':
         fig = summary_plot(df)
     fig.show()
