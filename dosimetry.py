@@ -124,20 +124,33 @@ def generate() -> None:
                 experiment_template_div.append(
                     BeautifulSoup(experiment_plot_div, 'html.parser'))
 
-        driver_template_div = soup.find(id='plot-tabs-3')
-        if driver_template_div is not None:
-            driver_fig = driver_facets(df)
-            driver_plot_div = driver_fig.to_html(driver_fig,
-                                                 include_plotlyjs='cdn',
-                                                 full_html=False,
-                                                 default_height='80%',
-                                                 default_width='90%')
-            driver_template_div.append(
-                BeautifulSoup(driver_plot_div, 'html.parser'))
+        # driver_template_div = soup.find(id='plot-tabs-3')
+        # if driver_template_div is not None:
+        #     driver_fig = driver_facets(df)
+        #     driver_plot_div = driver_fig.to_html(driver_fig,
+        #                                          include_plotlyjs='cdn',
+        #                                          full_html=False,
+        #                                          default_height='80%',
+        #                                          default_width='90%')
+        #     driver_template_div.append(
+        #         BeautifulSoup(driver_plot_div, 'html.parser'))
 
         experiment_template_div = soup.find(id='plot-tabs-4')
         if experiment_template_div is not None:
             experiment_figs = figure_experiments(df, time_column="lgad_timestamp")
+            for experiment_fig in experiment_figs:
+                experiment_plot_div = experiment_fig.to_html(
+                    experiment_fig,
+                    include_plotlyjs='cdn',
+                    full_html=False,
+                    default_height='80%',
+                    default_width='90%')
+                experiment_template_div.append(
+                    BeautifulSoup(experiment_plot_div, 'html.parser'))
+
+        experiment_template_div = soup.find(id='plot-tabs-5')
+        if experiment_template_div is not None:
+            experiment_figs = figure_experiments(df, time_column="lgad_timestamp_data")
             for experiment_fig in experiment_figs:
                 experiment_plot_div = experiment_fig.to_html(
                     experiment_fig,
