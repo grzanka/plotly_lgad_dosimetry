@@ -66,7 +66,7 @@ def figure_experiments(df: pd.DataFrame) -> list[go.Figure]:
                      [scenario_label == item for item in scenario_labels]
                  }, {
                      'title': scenario_label,
-                     'showlegend': False
+                     'showlegend': True
                  }]) for scenario_label in scenario_labels
         ]
         buttons.append(
@@ -76,7 +76,7 @@ def figure_experiments(df: pd.DataFrame) -> list[go.Figure]:
                      'visible': [True for item in scenario_labels]
                  }, {
                      'title': 'All',
-                     'showlegend': False
+                     'showlegend': True
                  }]))
 
         fig.update_layout(updatemenus=[
