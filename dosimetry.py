@@ -11,13 +11,13 @@ HTML_OUTPUT_FILE = Path(Path(__file__).parent, 'site', 'index.html')
 
 
 def data(data_path: Path) -> pd.DataFrame:
-    return pd.DataFrame(pd.read_hdf(data_path, key='df'))
+    return pd.DataFrame(pd.read_hdf(data_path, key='data'))
 
 
 def summary_plot(df: pd.DataFrame) -> go.Figure:
     '''Plot the data'''
     fig = px.scatter(df,
-                     x="first_timestamp",
+                     x="timestamp",
                      y=["E1"],
                      title="Ionisation chamber current vs time",
                      color='driver',
@@ -28,7 +28,7 @@ def summary_plot(df: pd.DataFrame) -> go.Figure:
 def driver_facets(df: pd.DataFrame) -> go.Figure:
     '''Plot the data'''
     fig = px.scatter(df,
-                     x="first_timestamp",
+                     x="timestamp",
                      y=["E1"],
                      title="Ionisation chamber current vs time",
                      facet_col='driver',
@@ -36,11 +36,11 @@ def driver_facets(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def figure_experiments(df: pd.DataFrame, time_column: str = "first_timestamp") -> list[go.Figure]:
+def figure_experiments(df: pd.DataFrame, time_column: str = "timestamp") -> list[go.Figure]:
     '''Plot the data'''
 
     figs = []
-    df_with_experiments = df[df.experiment != 'NA']
+    df_with_experiments = df[df.experiment != 'unknown']
 
     experiment_names = df_with_experiments.experiment.unique()
 
@@ -135,31 +135,31 @@ def generate() -> None:
         #     driver_template_div.append(
         #         BeautifulSoup(driver_plot_div, 'html.parser'))
 
-        experiment_template_div = soup.find(id='plot-tabs-4')
-        if experiment_template_div is not None:
-            experiment_figs = figure_experiments(df, time_column="lgad_timestamp")
-            for experiment_fig in experiment_figs:
-                experiment_plot_div = experiment_fig.to_html(
-                    experiment_fig,
-                    include_plotlyjs='cdn',
-                    full_html=False,
-                    default_height='80%',
-                    default_width='90%')
-                experiment_template_div.append(
-                    BeautifulSoup(experiment_plot_div, 'html.parser'))
+        # experiment_template_div = soup.find(id='plot-tabs-4')
+        # if experiment_template_div is not None:
+        #     experiment_figs = figure_experiments(df, time_column="lgad_timestamp")
+        #     for experiment_fig in experiment_figs:
+        #         experiment_plot_div = experiment_fig.to_html(
+        #             experiment_fig,
+        #             include_plotlyjs='cdn',
+        #             full_html=False,
+        #             default_height='80%',
+        #             default_width='90%')
+        #         experiment_template_div.append(
+        #             BeautifulSoup(experiment_plot_div, 'html.parser'))
 
-        experiment_template_div = soup.find(id='plot-tabs-5')
-        if experiment_template_div is not None:
-            experiment_figs = figure_experiments(df, time_column="lgad_timestamp_data")
-            for experiment_fig in experiment_figs:
-                experiment_plot_div = experiment_fig.to_html(
-                    experiment_fig,
-                    include_plotlyjs='cdn',
-                    full_html=False,
-                    default_height='80%',
-                    default_width='90%')
-                experiment_template_div.append(
-                    BeautifulSoup(experiment_plot_div, 'html.parser'))
+        # experiment_template_div = soup.find(id='plot-tabs-5')
+        # if experiment_template_div is not None:
+        #     experiment_figs = figure_experiments(df, time_column="lgad_timestamp_data")
+        #     for experiment_fig in experiment_figs:
+        #         experiment_plot_div = experiment_fig.to_html(
+        #             experiment_fig,
+        #             include_plotlyjs='cdn',
+        #             full_html=False,
+        #             default_height='80%',
+        #             default_width='90%')
+        #         experiment_template_div.append(
+        #             BeautifulSoup(experiment_plot_div, 'html.parser'))
 
         # ensure the output directory exists
         HTML_OUTPUT_FILE.parent.mkdir(exist_ok=True, parents=True)
