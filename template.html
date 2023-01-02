@@ -18,6 +18,8 @@
   <!-- MDB -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css" rel="stylesheet" />
 
+  <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+
 </head>
 
 <body>
@@ -35,11 +37,15 @@
     </li>
     <li class="nav-item" role="presentation">
       <a class="nav-link" id="plot-tab-2" data-mdb-toggle="tab" href="#plot-tabs-2" role="tab"
-        aria-controls="plot-tabs-2" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">LGAD time</a>
+        aria-controls="plot-tabs-2" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">LGAD time ref</a>
     </li>
     <li class="nav-item" role="presentation">
       <a class="nav-link" id="plot-tab-3" data-mdb-toggle="tab" href="#plot-tabs-3" role="tab"
-        aria-controls="plot-tabs-3" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">Summary of conditions</a>
+        aria-controls="plot-tabs-3" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">LGAD time data</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="plot-tab-4" data-mdb-toggle="tab" href="#plot-tabs-4" role="tab"
+        aria-controls="plot-tabs-4" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">Summary of conditions</a>
     </li>
   </ul>
   <!-- Tabs navs -->
@@ -53,6 +59,9 @@
       With LGAD time (assuming sync 12:15:12 IFJ time == 11_04_24 LGAD time):
     </div>
     <div class="tab-pane fade" id="plot-tabs-3" role="tabpanel" aria-labelledby="plot-tab-3">
+      With LGAD time deduced from data:
+    </div>
+    <div class="tab-pane fade" id="plot-tabs-4" role="tabpanel" aria-labelledby="plot-tab-4">
       Summary of conditions (IFJ time):
     </div>
   </div>
