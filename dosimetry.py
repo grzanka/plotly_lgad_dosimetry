@@ -66,13 +66,13 @@ def figure_experiments(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta
         if len(scenario_labels) > 1:
             buttons.append(
                 dict(label='All',
-                    method='update',
-                    args=[{
-                        'visible': [True for _ in scenario_labels]
-                    }, {
-                        'title': 'All',
-                        'showlegend': True
-                    }]))
+                     method='update',
+                     args=[{
+                         'visible': [True for _ in scenario_labels]
+                     }, {
+                         'title': 'All',
+                         'showlegend': True
+                     }]))
 
         fig.update_layout(updatemenus=[dict(
             buttons=buttons,
@@ -103,13 +103,15 @@ def generate() -> None:
             experiment_figs = figure_experiments(df)
             for experiment_fig in experiment_figs:
                 experiment_plot_div_1 = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs='cdn',
-                                                             full_html=False,
-                                                             default_height='80%',
-                                                             default_width='90%')
+                                                               include_plotlyjs='cdn',
+                                                               full_html=False,
+                                                               default_height='80%',
+                                                               default_width='90%')
                 template_div.append(BeautifulSoup(experiment_plot_div_1, 'html.parser'))
 
             # write the output file
+            if not HTML_OUTPUT_FILE.parent.exists():
+                HTML_OUTPUT_FILE.parent.mkdir(parents=True)
             with open(HTML_OUTPUT_FILE, 'w') as f:
                 click.echo(f'Writing {HTML_OUTPUT_FILE}')
                 f.write(str(soup))
@@ -117,14 +119,13 @@ def generate() -> None:
             click.echo(f'Output file {HTML_OUTPUT_FILE} size: {HTML_OUTPUT_FILE.stat().st_size / 1024 / 1024:3.3f} MBs')
             template_div.clear()
 
-
-            experiment_figs = figure_experiments(df, time_shift = conditions_metadata['lgad_time_shift_ref'])
+            experiment_figs = figure_experiments(df, time_shift=conditions_metadata['lgad_time_shift_ref'])
             for experiment_fig in experiment_figs:
                 experiment_plot_div_2 = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs='cdn',
-                                                             full_html=False,
-                                                             default_height='80%',
-                                                             default_width='90%')
+                                                               include_plotlyjs='cdn',
+                                                               full_html=False,
+                                                               default_height='80%',
+                                                               default_width='90%')
                 template_div.append(BeautifulSoup(experiment_plot_div_2, 'html.parser'))
             # write the output file
             output_filename = HTML_OUTPUT_FILE.with_name('tab2.html')
@@ -135,14 +136,13 @@ def generate() -> None:
             click.echo(f"Output file {output_filename} size: {output_filename.stat().st_size / 1024 / 1024:3.3f} MBs")
             template_div.clear()
 
-
-            experiment_figs = figure_experiments(df, time_shift = conditions_metadata['lgad_time_shift_data'])
+            experiment_figs = figure_experiments(df, time_shift=conditions_metadata['lgad_time_shift_data'])
             for experiment_fig in experiment_figs:
                 experiment_plot_div_2 = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs='cdn',
-                                                             full_html=False,
-                                                             default_height='80%',
-                                                             default_width='90%')
+                                                               include_plotlyjs='cdn',
+                                                               full_html=False,
+                                                               default_height='80%',
+                                                               default_width='90%')
                 template_div.append(BeautifulSoup(experiment_plot_div_2, 'html.parser'))
             # write the output file
             output_filename = HTML_OUTPUT_FILE.with_name('tab3.html')
@@ -152,7 +152,6 @@ def generate() -> None:
             # print the size of output file in MBs
             click.echo(f"Output file {output_filename} size: {output_filename.stat().st_size / 1024 / 1024:3.3f} MBs")
             template_div.clear()
-
 
             # rename column name file_creation_timestamp to file_creation
             df_conditions.rename(columns={
