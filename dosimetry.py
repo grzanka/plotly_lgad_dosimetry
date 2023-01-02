@@ -172,13 +172,11 @@ def generate() -> None:
                                              (df_conditions.scenario == 'unknown')].index,
                                inplace=True)
 
-            df_conditions.set_index(['experiment', 'scenario', 'file_creation'], inplace=True)
-            df_conditions.sort_index(inplace=True)
-            df_conditions.reset_index(inplace=True)
-
             df_conditions.set_index(['experiment', 'scenario'], inplace=True)
+            df_conditions.sort_values(by=['experiment', 'file_creation'], inplace=True)
 
             df_conditions.insert(0, "day", df_conditions.pop("day"))
+            df_conditions.insert(1, "file_creation", df_conditions.pop("file_creation"))
             df_conditions.insert(2, "stage1", df_conditions.pop("stage1"))
             df_conditions.insert(3, "stage2", df_conditions.pop("stage2"))
             df_conditions.insert(4, "stage3", df_conditions.pop("stage3"))
