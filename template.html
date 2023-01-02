@@ -18,7 +18,6 @@
   <!-- MDB -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css" rel="stylesheet" />
 
-
 </head>
 
 <body>
@@ -31,54 +30,39 @@
    -->
   <ul class="nav nav-tabs mb-3" id="plot-list-1" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link active" id="plot-tab-1" data-mdb-toggle="tab" href="#plot-tabs-1" role="tab"
-        aria-controls="plot-tabs-1" aria-selected="true" onclick="window.dispatchEvent(new Event('resize'));">Summary</a>
+      <a class="nav-link" id="plot-tab-1" data-mdb-toggle="tab" href="#plot-tabs-1" role="tab"
+        aria-controls="plot-tabs-1" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">IFJ time</a>
     </li>
     <li class="nav-item" role="presentation">
       <a class="nav-link" id="plot-tab-2" data-mdb-toggle="tab" href="#plot-tabs-2" role="tab"
-        aria-controls="plot-tabs-2" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">By experiment</a>
+        aria-controls="plot-tabs-2" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">Summary of conditions</a>
     </li>
     <!-- <li class="nav-item" role="presentation">
-      <a class="nav-link" id="plot-tab-3" data-mdb-toggle="tab" href="#plot-tabs-3" role="tab"
-        aria-controls="plot-tabs-3" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">By driver</a>
-    </li> -->
-    <li class="nav-item" role="presentation">
-      <a class="nav-link" id="plot-tab-4" data-mdb-toggle="tab" href="#plot-tabs-4" role="tab"
-        aria-controls="plot-tabs-4" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">LGAD time from sync</a>
-    </li>
-    <li class="nav-item" role="presentation">
       <a class="nav-link" id="plot-tab-5" data-mdb-toggle="tab" href="#plot-tabs-5" role="tab"
         aria-controls="plot-tabs-5" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">LGAD time from data</a>
-    </li>
+    </li> -->
   </ul>
   <!-- Tabs navs -->
 
   <!-- Tabs content -->
   <div class="tab-content" id="ex1-content">
     <div class="tab-pane fade show active" id="plot-tabs-1" role="tabpanel" aria-labelledby="plot-tab-1">
-      Summary:
+      IFJ time:
     </div>
     <div class="tab-pane fade" id="plot-tabs-2" role="tabpanel" aria-labelledby="plot-tab-2">
-      By experiment:
+      Summary of conditions:
     </div>
-    <!-- <div class="tab-pane fade" id="plot-tabs-3" role="tabpanel" aria-labelledby="plot-tab-3">
-      By driver:
-    </div> -->
-    <div class="tab-pane fade" id="plot-tabs-4" role="tabpanel" aria-labelledby="plot-tab-4">
+    <!-- <div class="tab-pane fade" id="plot-tabs-2" role="tabpanel" aria-labelledby="plot-tab-2">
       With LGAD time (assuming sync 12:15:12 IFJ time == 11_04_24 LGAD time):
     </div>
-    <div class="tab-pane fade" id="plot-tabs-5" role="tabpanel" aria-labelledby="plot-tab-5">
+    <div class="tab-pane fade" id="plot-tabs-3" role="tabpanel" aria-labelledby="plot-tab-3">
       With LGAD time (assuming sync from data):
-    </div>
+    </div> -->
   </div>
   <!-- Tabs content -->
 
-  <!-- Tabs navs -->
-
   <!-- MDB -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.js"></script>
-  <!-- Custom scripts -->
-  <script type="text/javascript"></script>
 
 </body>
 
