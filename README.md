@@ -23,3 +23,17 @@ Once you are done deactivate the virtual environment:
 ```
 deactivate
 ```
+
+## Running the code
+
+To generate the static HTML file with the plotly graphs run:
+
+```
+python dosimetry.py generate
+```
+
+To show the plot in the browser run:
+
+```
+python dosimetry.py show
+```
