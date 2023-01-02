@@ -63,15 +63,16 @@ def figure_experiments(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta
                      'showlegend': True
                  }]) for scenario_label in scenario_labels
         ]
-        buttons.append(
-            dict(label='All',
-                 method='update',
-                 args=[{
-                     'visible': [True for item in scenario_labels]
-                 }, {
-                     'title': 'All',
-                     'showlegend': True
-                 }]))
+        if len(scenario_labels) > 1:
+            buttons.append(
+                dict(label='All',
+                    method='update',
+                    args=[{
+                        'visible': [True for _ in scenario_labels]
+                    }, {
+                        'title': 'All',
+                        'showlegend': True
+                    }]))
 
         fig.update_layout(updatemenus=[dict(
             buttons=buttons,
