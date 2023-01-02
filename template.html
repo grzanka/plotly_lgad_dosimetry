@@ -18,7 +18,7 @@
   <!-- MDB -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css" rel="stylesheet" />
 
-  <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+  <!-- <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script> -->
 
 </head>
 
@@ -32,37 +32,25 @@
    -->
   <ul class="nav nav-tabs mb-3" id="plot-list-1" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="plot-tab-1" data-mdb-toggle="tab" href="#plot-tabs-1" role="tab"
-        aria-controls="plot-tabs-1" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">IFJ time</a>
+      <a class="nav-link" id="plot-tab-1" href="index.html">IFJ time</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="plot-tab-2" data-mdb-toggle="tab" href="#plot-tabs-2" role="tab"
-        aria-controls="plot-tabs-2" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">LGAD time ref</a>
+      <a class="nav-link" id="plot-tab-2" href="tab2.html" role="tab">LGAD time ref</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="plot-tab-3" data-mdb-toggle="tab" href="#plot-tabs-3" role="tab"
-        aria-controls="plot-tabs-3" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">LGAD time data</a>
+      <a class="nav-link" id="plot-tab-3" href="tab3.html" role="tab"
+        onclick="window.dispatchEvent(new Event('resize'));">LGAD time data</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="plot-tab-4" data-mdb-toggle="tab" href="#plot-tabs-4" role="tab"
-        aria-controls="plot-tabs-4" aria-selected="false" onclick="window.dispatchEvent(new Event('resize'));">Summary of conditions</a>
+      <a class="nav-link" id="plot-tab-4" href="tab4.html"
+        onclick="window.dispatchEvent(new Event('resize'));">Summary of conditions</a>
     </li>
   </ul>
   <!-- Tabs navs -->
 
   <!-- Tabs content -->
   <div class="tab-content" id="ex1-content">
-    <div class="tab-pane fade show active" id="plot-tabs-1" role="tabpanel" aria-labelledby="plot-tab-1">
-      IFJ time:
-    </div>
-    <div class="tab-pane fade" id="plot-tabs-2" role="tabpanel" aria-labelledby="plot-tab-2">
-      With LGAD time (assuming sync 12:15:12 IFJ time == 11_04_24 LGAD time):
-    </div>
-    <div class="tab-pane fade" id="plot-tabs-3" role="tabpanel" aria-labelledby="plot-tab-3">
-      With LGAD time deduced from data:
-    </div>
-    <div class="tab-pane fade" id="plot-tabs-4" role="tabpanel" aria-labelledby="plot-tab-4">
-      Summary of conditions (IFJ time):
+    <div class="tab-pane fade show active" id="plot-tabs-1" role="tabpanel">      
     </div>
   </div>
   <!-- Tabs content -->
