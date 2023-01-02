@@ -102,7 +102,7 @@ def generate() -> None:
             experiment_figs = figure_experiments(df)
             for experiment_fig in experiment_figs:
                 experiment_plot_div = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs='cdn',
+                                                             include_plotlyjs=False,
                                                              full_html=False,
                                                              default_height='80%',
                                                              default_width='90%')
@@ -110,16 +110,27 @@ def generate() -> None:
 
         experiment_template_div = soup.find(id='plot-tabs-2')
         if experiment_template_div is not None:
-            experiment_figs = figure_experiments(df, time_shift = conditions_metadata['lgad_time_shift'])
+            experiment_figs = figure_experiments(df, time_shift = conditions_metadata['lgad_time_shift_ref'])
             for experiment_fig in experiment_figs:
                 experiment_plot_div = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs='cdn',
+                                                             include_plotlyjs=False,
                                                              full_html=False,
                                                              default_height='80%',
                                                              default_width='90%')
                 experiment_template_div.append(BeautifulSoup(experiment_plot_div, 'html.parser'))
 
-        conditions_template_div = soup.find(id='plot-tabs-3')
+        experiment_template_div = soup.find(id='plot-tabs-3')
+        if experiment_template_div is not None:
+            experiment_figs = figure_experiments(df, time_shift = conditions_metadata['lgad_time_shift_data'])
+            for experiment_fig in experiment_figs:
+                experiment_plot_div = experiment_fig.to_html(experiment_fig,
+                                                             include_plotlyjs=False,
+                                                             full_html=False,
+                                                             default_height='80%',
+                                                             default_width='90%')
+                experiment_template_div.append(BeautifulSoup(experiment_plot_div, 'html.parser'))
+
+        conditions_template_div = soup.find(id='plot-tabs-4')
         if conditions_template_div is not None:
             # rename column name file_creation_timestamp to file_creation
             df_conditions.rename(columns={
