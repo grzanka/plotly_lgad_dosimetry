@@ -80,6 +80,7 @@ def figure_experiments(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta
             type="buttons",
             direction="down",
         )])
+
         figs.append(fig)
     return figs
 
@@ -97,41 +98,62 @@ def generate() -> None:
         click.echo(f'Parsing {HTML_TEMPLATE_FILE}')
         soup = BeautifulSoup(f, 'html.parser')
 
-        experiment_template_div = soup.find(id='plot-tabs-1')
-        if experiment_template_div is not None:
+        template_div = soup.find(id='plot-tabs-1')
+        if template_div is not None:
             experiment_figs = figure_experiments(df)
             for experiment_fig in experiment_figs:
-                experiment_plot_div = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs=False,
+                experiment_plot_div_1 = experiment_fig.to_html(experiment_fig,
+                                                             include_plotlyjs='cdn',
                                                              full_html=False,
                                                              default_height='80%',
                                                              default_width='90%')
-                experiment_template_div.append(BeautifulSoup(experiment_plot_div, 'html.parser'))
+                template_div.append(BeautifulSoup(experiment_plot_div_1, 'html.parser'))
 
-        experiment_template_div = soup.find(id='plot-tabs-2')
-        if experiment_template_div is not None:
+            # write the output file
+            with open(HTML_OUTPUT_FILE, 'w') as f:
+                click.echo(f'Writing {HTML_OUTPUT_FILE}')
+                f.write(str(soup))
+            # print the size of output file in MBs
+            click.echo(f'Output file {HTML_OUTPUT_FILE} size: {HTML_OUTPUT_FILE.stat().st_size / 1024 / 1024:3.3f} MBs')
+            template_div.clear()
+
+
             experiment_figs = figure_experiments(df, time_shift = conditions_metadata['lgad_time_shift_ref'])
             for experiment_fig in experiment_figs:
-                experiment_plot_div = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs=False,
+                experiment_plot_div_2 = experiment_fig.to_html(experiment_fig,
+                                                             include_plotlyjs='cdn',
                                                              full_html=False,
                                                              default_height='80%',
                                                              default_width='90%')
-                experiment_template_div.append(BeautifulSoup(experiment_plot_div, 'html.parser'))
+                template_div.append(BeautifulSoup(experiment_plot_div_2, 'html.parser'))
+            # write the output file
+            output_filename = HTML_OUTPUT_FILE.with_name('tab2.html')
+            with open(output_filename, 'w') as f:
+                click.echo(f"Writing {output_filename}")
+                f.write(str(soup))
+            # print the size of output file in MBs
+            click.echo(f"Output file {output_filename} size: {output_filename.stat().st_size / 1024 / 1024:3.3f} MBs")
+            template_div.clear()
 
-        experiment_template_div = soup.find(id='plot-tabs-3')
-        if experiment_template_div is not None:
+
             experiment_figs = figure_experiments(df, time_shift = conditions_metadata['lgad_time_shift_data'])
             for experiment_fig in experiment_figs:
-                experiment_plot_div = experiment_fig.to_html(experiment_fig,
-                                                             include_plotlyjs=False,
+                experiment_plot_div_2 = experiment_fig.to_html(experiment_fig,
+                                                             include_plotlyjs='cdn',
                                                              full_html=False,
                                                              default_height='80%',
                                                              default_width='90%')
-                experiment_template_div.append(BeautifulSoup(experiment_plot_div, 'html.parser'))
+                template_div.append(BeautifulSoup(experiment_plot_div_2, 'html.parser'))
+            # write the output file
+            output_filename = HTML_OUTPUT_FILE.with_name('tab3.html')
+            with open(output_filename, 'w') as f:
+                click.echo(f"Writing {output_filename}")
+                f.write(str(soup))
+            # print the size of output file in MBs
+            click.echo(f"Output file {output_filename} size: {output_filename.stat().st_size / 1024 / 1024:3.3f} MBs")
+            template_div.clear()
 
-        conditions_template_div = soup.find(id='plot-tabs-4')
-        if conditions_template_div is not None:
+
             # rename column name file_creation_timestamp to file_creation
             df_conditions.rename(columns={
                 "file_creation_timestamp": "file_creation",
@@ -150,13 +172,11 @@ def generate() -> None:
                                              (df_conditions.scenario == 'unknown')].index,
                                inplace=True)
 
-            df_conditions.set_index(['experiment', 'scenario', 'file_creation'], inplace=True)
-            df_conditions.sort_index(inplace=True)
-            df_conditions.reset_index(inplace=True)
-
             df_conditions.set_index(['experiment', 'scenario'], inplace=True)
+            df_conditions.sort_values(by=['experiment', 'file_creation'], inplace=True)
 
             df_conditions.insert(0, "day", df_conditions.pop("day"))
+            df_conditions.insert(1, "file_creation", df_conditions.pop("file_creation"))
             df_conditions.insert(2, "stage1", df_conditions.pop("stage1"))
             df_conditions.insert(3, "stage2", df_conditions.pop("stage2"))
             df_conditions.insert(4, "stage3", df_conditions.pop("stage3"))
@@ -171,16 +191,15 @@ def generate() -> None:
                                                        'stage3': lambda x: x.strftime('%H:%M:%S.%f')[:-5],
                                                        'stage4': lambda x: x.strftime('%H:%M:%S.%f')[:-5],
                                                    })
-            conditions_template_div.append(BeautifulSoup(conditions_div, 'html.parser'))
-
-        # ensure the output directory exists
-        HTML_OUTPUT_FILE.parent.mkdir(exist_ok=True, parents=True)
-        # write the output file
-        with open(HTML_OUTPUT_FILE, 'w') as f:
-            click.echo(f'Writing {HTML_OUTPUT_FILE}')
-            f.write(str(soup))
-        # print the size of output file in MBs
-        click.echo(f'Output file size: {HTML_OUTPUT_FILE.stat().st_size / 1024 / 1024:3.3f} MBs')
+            template_div.append(BeautifulSoup(conditions_div, 'html.parser'))
+            # write the output file
+            output_filename = HTML_OUTPUT_FILE.with_name('tab4.html')
+            with open(output_filename, 'w') as f:
+                click.echo(f"Writing {output_filename}")
+                f.write(str(soup))
+            # print the size of output file in MBs
+            click.echo(f"Output file {output_filename} size: {output_filename.stat().st_size / 1024 / 1024:3.3f} MBs")
+            template_div.clear()
 
 
 @click.command()
