@@ -170,6 +170,8 @@ def generate() -> None:
             df_conditions.drop(df_conditions[(df_conditions.experiment == 'unknown') |
                                              (df_conditions.scenario == 'unknown')].index,
                                inplace=True)
+            # drop rows without timestamp
+            df_conditions.dropna(subset=['file_creation'], inplace=True)
 
             df_conditions.set_index(['experiment', 'scenario'], inplace=True)
             df_conditions.sort_values(by=['experiment', 'file_creation'], inplace=True)
