@@ -4,3 +4,4 @@ plotly
 tables
 click
 beautifulsoup4
+scipy
