@@ -5,3 +5,4 @@ tables
 click
 beautifulsoup4
 scipy
+matplotlib
