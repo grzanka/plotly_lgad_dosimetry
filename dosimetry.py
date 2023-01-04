@@ -130,6 +130,8 @@ def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timed
 def save_single_html(output_path: Path, html_element: str, soup: BeautifulSoup) -> None:
     template_div = soup.find(id='content-div')
     if template_div:
+        # ensure the output directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, 'w') as f:
             click.echo(f"Writing {output_path}")
             template_div.append(BeautifulSoup(html_element, 'html.parser'))
