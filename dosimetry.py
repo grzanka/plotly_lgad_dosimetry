@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 import click
 import pandas as pd
 import plotly.express as px
@@ -47,6 +48,13 @@ def summary_html_element(df: pd.DataFrame) -> str:
                        inplace=True)
     # drop rows without timestamp
     df_conditions.dropna(subset=['file_creation'], inplace=True)
+    # drop unneeded columns
+    df_conditions.drop(columns=[
+        'axis2_start',
+        'axis2_stop',
+        'axis3_start',
+        'axis3_stop',
+    ], inplace=True)
 
     df_conditions.set_index(['experiment', 'scenario'], inplace=True)
     df_conditions.sort_values(by=['file_creation'], inplace=True)
@@ -81,13 +89,15 @@ def summary_plot(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta('0s')) -> go.Figure:
+def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta('0s'), x_axis : str = 'timestamp') -> Union[go.Figure, None]:
     '''Plot the data'''
 
+    if df[x_axis].isna().all():
+        return None
     df_to_plot = df.copy()
     df_to_plot['timestamp'] += time_shift
     fig = px.scatter(df_to_plot,
-                     x="timestamp",
+                     x=x_axis,
                      y=["E1"],
                      title="Ionisation chamber current vs time",
                      facet_col='experiment',
@@ -215,16 +225,24 @@ def generate() -> None:
                                                      })
                 if timeshift_name == 'IFJ time shift':
                     div_element_timeshift['class'] = 'tab-pane fade show active'
-                exp_figure = figures_for_experiment(df_experiment, time_shift=timeshift)
                 div_description = soup.new_tag('div', **{'class': 'description'})
                 div_description.string = f'Experiment {experiment_name} with {timeshift_name}'
                 div_element_timeshift.append(div_description)
+                exp_figure = figures_for_experiment(df_experiment, time_shift=timeshift)
                 div_element_timeshift.append(
                     BeautifulSoup(
                         exp_figure.to_html(include_plotlyjs='cdn',
                                            full_html=False,
                                            default_height='80%',
                                            default_width='90%'), 'html.parser'))
+                exp_figure = figures_for_experiment(df_experiment, time_shift=timeshift, x_axis='position')
+                if exp_figure:
+                    div_element_timeshift.append(
+                        BeautifulSoup(
+                            exp_figure.to_html(include_plotlyjs='cdn',
+                                            full_html=False,
+                                            default_height='80%',
+                                            default_width='90%'), 'html.parser'))
                 div_element.append(div_element_timeshift)
             all_fig_html_elem += str(div_element)
 
