@@ -49,7 +49,7 @@ def summary_html_element(df: pd.DataFrame) -> str:
     df_conditions.dropna(subset=['file_creation'], inplace=True)
 
     df_conditions.set_index(['experiment', 'scenario'], inplace=True)
-    df_conditions.sort_values(by=['experiment', 'file_creation'], inplace=True)
+    df_conditions.sort_values(by=['file_creation'], inplace=True)
 
     df_conditions.insert(0, "day", df_conditions.pop("day"))
     df_conditions.insert(1, "file_creation", df_conditions.pop("file_creation"))
