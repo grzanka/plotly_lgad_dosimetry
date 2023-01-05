@@ -89,7 +89,7 @@ def summary_plot(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta('0s'), x_axis : str = 'timestamp') -> Union[go.Figure, None]:
+def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta('0s'), x_axis : str = 'timestamp', y_axis : str = 'E1') -> Union[go.Figure, None]:
     '''Plot the data'''
 
     if df[x_axis].isna().all():
@@ -98,14 +98,34 @@ def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timed
     df_to_plot['timestamp'] += time_shift
     fig = px.scatter(df_to_plot,
                      x=x_axis,
-                     y=["E1"],
+                     y=[y_axis],
                      title="Ionisation chamber current vs time",
                      facet_col='experiment',
                      color='scenario',
                      render_mode='webgl')
     fig.update_xaxes(matches=None)
-
+       
     scenario_labels = df_to_plot.scenario.unique()
+
+    if df_to_plot['experiment'].unique()[0] == 'BP_auto_8bit':
+        first_scenario = df_to_plot.scenario.unique()[0]
+        ymax = df_to_plot[df_to_plot.scenario == first_scenario][y_axis].max()
+        run_start = pd.to_datetime("14_12_2022__12_58_49", format="%d_%m_%Y__%H_%M_%S")
+        run_end = pd.to_datetime("14_12_2022__14_28_48", format="%d_%m_%Y__%H_%M_%S")
+        filename = "BraggStudies_s_preciseScan_1__14_12_2022__12_58_49.h5"
+        fig.add_trace(
+            go.Scatter(
+                x=[run_start, run_end, run_end, run_start, run_start], 
+                y=[0, 0, ymax * 1.1, ymax * 1.1,0], 
+                text=["", "", "",filename, ""],
+                textposition="top right",
+                mode="lines+text", 
+                name=first_scenario, 
+                fill="toself", 
+                fillcolor="rgba(0,0,0,0.1)",
+                )
+        )
+ 
     buttons = [
         dict(label=scenario_label,
              method='update',
@@ -166,6 +186,7 @@ def generate() -> None:
         experiment_names = df_conditions.experiment.unique().tolist()
         # remove 'unknown' experiment
         experiment_names.remove('unknown')
+        experiment_names.remove('current_scan')
         click.echo(f'Found {len(experiment_names)} experiments: {experiment_names}')
 
         for experiment_name in experiment_names:
