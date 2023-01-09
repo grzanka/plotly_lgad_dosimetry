@@ -12,9 +12,12 @@ HTML_OUTPUT_FILE = Path(Path(__file__).parent, 'site', 'index.html')
 
 
 def data(data_path: Path) -> pd.DataFrame:
-    click.echo(f'Reading {data_path}')
+    click.echo(f'Reading data from {data_path}')
     return pd.DataFrame(pd.read_hdf(data_path, key='data'))
 
+def lgad_timestamps_data(data_path: Path) -> pd.DataFrame:
+    click.echo(f'Reading timestamps from {data_path}')
+    return pd.DataFrame(pd.read_hdf(data_path, key='lgad_timestamps'))
 
 def conditions(data_path: Path) -> tuple[pd.DataFrame, dict]:
     click.echo(f'Reading {data_path} conditions')
@@ -23,7 +26,6 @@ def conditions(data_path: Path) -> tuple[pd.DataFrame, dict]:
         metadata = store.get_storer('conditions').attrs.metadata
 
     return pd.DataFrame(pd.read_hdf(data_path, key='conditions')), metadata
-
 
 def summary_html_element(df: pd.DataFrame) -> str:
     '''Generate the summary table as an html element'''
@@ -89,7 +91,7 @@ def summary_plot(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta('0s'), x_axis : str = 'timestamp', y_axis : str = 'E1') -> Union[go.Figure, None]:
+def figures_for_experiment(df: pd.DataFrame, df_conditions: pd.DataFrame, time_shift: pd.Timedelta = pd.Timedelta('0s'), x_axis : str = 'timestamp', y_axis : str = 'E1') -> Union[go.Figure, None]:
     '''Plot the data'''
 
     if df[x_axis].isna().all():
@@ -105,43 +107,52 @@ def figures_for_experiment(df: pd.DataFrame, time_shift: pd.Timedelta = pd.Timed
                      render_mode='webgl')
     fig.update_xaxes(matches=None)
        
-    scenario_labels = df_to_plot.scenario.unique()
+    series_labels = df_to_plot.scenario.unique().tolist()
 
-    if df_to_plot['experiment'].unique()[0] == 'BP_auto_8bit':
-        first_scenario = df_to_plot.scenario.unique()[0]
-        ymax = df_to_plot[df_to_plot.scenario == first_scenario][y_axis].max()
-        run_start = pd.to_datetime("14_12_2022__12_58_49", format="%d_%m_%Y__%H_%M_%S")
-        run_end = pd.to_datetime("14_12_2022__14_28_48", format="%d_%m_%Y__%H_%M_%S")
-        filename = "BraggStudies_s_preciseScan_1__14_12_2022__12_58_49.h5"
-        fig.add_trace(
-            go.Scatter(
-                x=[run_start, run_end, run_end, run_start, run_start], 
-                y=[0, 0, ymax * 1.1, ymax * 1.1,0], 
-                text=["", "", "",filename, ""],
-                textposition="top right",
-                mode="lines+text", 
-                name=first_scenario, 
-                fill="toself", 
-                fillcolor="rgba(0,0,0,0.1)",
-                )
-        )
+    df_lgad_timestamps = lgad_timestamps_data(DOSIMETRIC_DATA_SOURCE)
+    df_lgad_timestamps.rename(columns={'filename': 'datafile'}, inplace=True)
+    df_merged = df_lgad_timestamps[df_lgad_timestamps.datafile != ''].merge(df_conditions, on='datafile')
+    
+    experiment_name = df_to_plot['experiment'].unique()[0]
+    for scenario_name in df_to_plot.scenario.unique():
+        scenario_experiment_cond = (df_merged.experiment == experiment_name) & (df_merged.scenario == scenario_name)
+        possible_datafiles = df_merged[scenario_experiment_cond].datafile.unique()
+        if len(possible_datafiles) == 1:
+            datafile = possible_datafiles[0]
+            ymax = df_to_plot[df_to_plot.scenario == scenario_name][y_axis].max()
+            run_start = df_merged[scenario_experiment_cond].timestamp_open.min()
+            run_end = df_merged[scenario_experiment_cond].timestamp_close.max()
+            filename = datafile
+            fig.add_trace(
+                go.Scatter(
+                    x=[run_start, run_end, run_end, run_start, run_start], 
+                    y=[0, 0, ymax * 1.1, ymax * 1.1,0], 
+                    text=["", "", "",filename, ""],
+                    textposition="top right",
+                    mode="lines+text", 
+                    name=filename, 
+                    fill="toself", 
+                    fillcolor="rgba(0,0,0,0.05)",
+                    )
+            )
+            series_labels.append(filename)
  
     buttons = [
         dict(label=scenario_label,
              method='update',
              args=[{
-                 'visible': [scenario_label == item for item in scenario_labels]
+                 'visible': [scenario_label == item for item in series_labels]
              }, {
                  'title': scenario_label,
                  'showlegend': True
-             }]) for scenario_label in scenario_labels
+             }]) for scenario_label in series_labels
     ]
-    if len(scenario_labels) > 1:
+    if len(series_labels) > 1:
         buttons.append(
             dict(label='All',
                  method='update',
                  args=[{
-                     'visible': [True for _ in scenario_labels]
+                     'visible': [True for _ in series_labels]
                  }, {
                      'title': 'All',
                      'showlegend': True
@@ -186,9 +197,7 @@ def generate() -> None:
         experiment_names = df_conditions.experiment.unique().tolist()
         # remove 'unknown' experiment
         experiment_names.remove('unknown')
-        experiment_names.remove('current_scan')
         click.echo(f'Found {len(experiment_names)} experiments: {experiment_names}')
-
         for experiment_name in experiment_names:
             click.echo(f'Processing experiment {experiment_name}')
 
@@ -229,7 +238,7 @@ def generate() -> None:
                                              'role': 'tab',
                                              'data-mdb-toggle': 'pill'
                                          })
-                if timeshift_name == 'IFJ time shift':
+                if timeshift_name == 'LGAD time data':
                     a_element['class'] = 'nav-link active'
                 a_element.string = timeshift_name
                 li_element.append(a_element)
@@ -244,19 +253,19 @@ def generate() -> None:
                                                          'class': 'tab-pane fade',
                                                          'role': 'tabpanel'
                                                      })
-                if timeshift_name == 'IFJ time shift':
+                if timeshift_name == 'LGAD time data':
                     div_element_timeshift['class'] = 'tab-pane fade show active'
                 div_description = soup.new_tag('div', **{'class': 'description'})
                 div_description.string = f'Experiment {experiment_name} with {timeshift_name}'
                 div_element_timeshift.append(div_description)
-                exp_figure = figures_for_experiment(df_experiment, time_shift=timeshift)
+                exp_figure = figures_for_experiment(df_experiment, df_conditions, time_shift=timeshift)
                 div_element_timeshift.append(
                     BeautifulSoup(
                         exp_figure.to_html(include_plotlyjs='cdn',
                                            full_html=False,
                                            default_height='80%',
                                            default_width='90%'), 'html.parser'))
-                exp_figure = figures_for_experiment(df_experiment, time_shift=timeshift, x_axis='position')
+                exp_figure = figures_for_experiment(df_experiment, df_conditions, time_shift=timeshift, x_axis='position')
                 if exp_figure:
                     div_element_timeshift.append(
                         BeautifulSoup(
