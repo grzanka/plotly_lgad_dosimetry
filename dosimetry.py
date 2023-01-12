@@ -189,6 +189,8 @@ def generate() -> None:
     df = data(DOSIMETRIC_DATA_SOURCE)
     df_conditions, conditions_metadata = conditions(DOSIMETRIC_DATA_SOURCE)
 
+    df['E1plusE2'] = df.E1 + df.E2
+
     # parse the template file using beautiful soup
     with open(HTML_TEMPLATE_FILE, 'r') as f:
         click.echo(f'Parsing {HTML_TEMPLATE_FILE}')
@@ -265,14 +267,14 @@ def generate() -> None:
                 div_description = soup.new_tag('div', **{'class': 'description'})
                 div_description.string = f'Experiment {experiment_name} with {timeshift_name}'
                 div_element_timeshift.append(div_description)
-                exp_figure = figures_for_experiment(df_experiment, df_conditions, time_shift=timeshift)
+                exp_figure = figures_for_experiment(df_experiment, df_conditions, time_shift=timeshift, y_axis='E1plusE2')
                 div_element_timeshift.append(
                     BeautifulSoup(
                         exp_figure.to_html(include_plotlyjs='cdn',
                                            full_html=False,
                                            default_height='80%',
                                            default_width='90%'), 'html.parser'))
-                exp_figure = figures_for_experiment(df_experiment, df_conditions, time_shift=timeshift, x_axis='position')
+                exp_figure = figures_for_experiment(df_experiment, df_conditions, time_shift=timeshift, x_axis='position', y_axis='E1plusE2')
                 if exp_figure:
                     div_element_timeshift.append(
                         BeautifulSoup(
@@ -292,10 +294,11 @@ def generate() -> None:
 def show(plot, experiment_no: int) -> None:
     '''Show the plot in a browser'''
     df = data(DOSIMETRIC_DATA_SOURCE)
+    df_conditions, _ = conditions(DOSIMETRIC_DATA_SOURCE)
     fig = go.Figure()
     click.echo(f'Plotting {plot}')
     if plot == 'experiment':
-        fig = figures_for_experiment(df[df.experiment == 'current_scan'])
+        fig = figures_for_experiment(df[df.experiment == 'current_scan'], df_conditions)
     elif plot == 'summary':
         fig = summary_plot(df)
     fig.show()
