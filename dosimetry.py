@@ -218,6 +218,13 @@ def generate() -> None:
         # add the summary table
         save_single_html(HTML_OUTPUT_FILE.with_name('index.html'), summary_html_element(df_conditions), soup)
 
+        # read HTML elements from setup_template.html
+        with open(HTML_TEMPLATE_FILE.with_name('setup_template.html'), 'r') as f:
+            click.echo(f'Parsing setup template')
+            soup_setup = BeautifulSoup(f, 'html.parser')
+            save_single_html(HTML_OUTPUT_FILE.with_name('setup.html'), soup_setup.find(id='setup-id').prettify(), soup)
+
+        # loop through the experiments and generate the plots
         for experiment_name in experiment_names:
             df_experiment = df[df.experiment == experiment_name]
             all_fig_html_elem = ""

@@ -1,0 +1,46 @@
+<div id="setup-id">
+
+	<script type="importmap">
+			{
+			  "imports": {
+				"three": "https://unpkg.com/three@0.148.0/build/three.module.js",
+				"three/addons/": "https://unpkg.com/three@0.148.0/examples/jsm/"
+			  }
+			}
+		  </script>
+
+	<script type="module">
+
+		import * as THREE from 'three';
+		import { APP } from './js/app.js';
+
+		window.THREE = THREE; // Used by APP Scripts.
+
+		var loader = new THREE.FileLoader();
+		loader.load('app.json', function (text) {
+
+			var player = new APP.Player();
+			player.load(JSON.parse(text));
+			player.setSize(window.innerWidth, window.innerHeight);
+			player.play();
+
+			document.body.appendChild(player.dom);
+
+			window.addEventListener('resize', function () {
+
+				player.setSize(window.innerWidth, window.innerHeight);
+
+			});
+
+		});
+
+		let button = document.createElement('a');
+		button.href = 'https://threejs.org/editor/#file=' + location.href.split('/').slice(0, - 1).join('/') + '/app.json';
+		button.style.cssText = 'position: absolute; bottom: 20px; right: 20px; padding: 10px 16px; color: #fff; border: 1px solid #fff; border-radius: 20px; text-decoration: none;';
+		button.target = '_blank';
+		button.textContent = 'EDIT';
+		document.body.appendChild(button);
+
+	</script>
+
+</div>
