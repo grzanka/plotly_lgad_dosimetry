@@ -343,7 +343,7 @@
 				{
 					"uuid": "c1876a9b-6b34-481d-919b-586e005b6ff3",
 					"type": "Mesh",
-					"name": "TransChamberE7",
+					"name": "E7",
 					"layers": 1,
 					"matrix": [1,0,0,0,0,2.220446049250313e-16,1,0,0,-1,2.220446049250313e-16,0,0,1,5,1],
 					"geometry": "d67c3da9-d4e0-47aa-bfe5-44c3b97f55b4",
@@ -352,7 +352,7 @@
 				{
 					"uuid": "51c09ce5-f3cf-48fc-b765-fbc23101a4a6",
 					"type": "Mesh",
-					"name": "TransChamberE8",
+					"name": "E8",
 					"layers": 1,
 					"matrix": [1,0,0,0,0,2.220446049250313e-16,1,0,0,-1,2.220446049250313e-16,0,0,1,5.5,1],
 					"geometry": "d67c3da9-d4e0-47aa-bfe5-44c3b97f55b4",
@@ -388,7 +388,7 @@
 				{
 					"uuid": "0070048d-98d1-499d-a7da-ef03f7df6065",
 					"type": "Mesh",
-					"name": "ChamberE1",
+					"name": "E1",
 					"layers": 1,
 					"matrix": [1,0,0,0,0,2.220446049250313e-16,1,0,0,-1,2.220446049250313e-16,0,0,1,4,1],
 					"geometry": "b5085ec9-5523-4e35-8516-bcfff359bd33",
@@ -397,7 +397,7 @@
 				{
 					"uuid": "e17e88ef-1e2b-4b02-8b3e-66cb003031c9",
 					"type": "Mesh",
-					"name": "ChamberE2",
+					"name": "E2",
 					"layers": 1,
 					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,1,4,1],
 					"geometry": "cb6ec95b-47e2-4625-b642-cb452cd2d876",
