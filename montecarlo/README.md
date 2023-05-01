@@ -1,5 +1,14 @@
 # Simulation of monoenergetic beam
 
+## Results
+
+Take a look at mc.ipynb jupyter notebook for results of simulation.
+
+You can also view the results in experimental web interface for SHIELD-HIT12A particle transport code.
+Go to https://yaptide.github.io/web_dev/?https://raw.githubusercontent.com/grzanka/plotly_lgad_dosimetry/main/montecarlo/shield-hit12a/results_bp.json
+Then click "OK" when asked "Current editor data will be lost. Are you sure?". To see the results go to "Results" tab and inspect the data.
+Graphs are presented using JSROOT library which has similar capabilities to TBrowser (you can zoomin, change the scale to logarithmic etc...).
+
 ## Assumptions
 
 The simulation reflects measumerments without beam modulator (propeller).
